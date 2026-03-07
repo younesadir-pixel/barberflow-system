@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(content=~{::section})}">
+
+<body>
+    <section>
+        <!-- Success/Error Alerts -->
+        <div th:if="${successMessage}"
+            class="alert alert-success border-0 bg-success text-white shadow-sm mb-4 animate__animated animate__fadeIn">
+            <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}">Success</span>
+        </div>
+        <div th:if="${errorMessage}"
+            class="alert alert-danger border-0 bg-danger text-white shadow-sm mb-4 animate__animated animate__shakeX">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}">Error</span>
+        </div>
+
+        <!-- Analytics & Quick Stats (Top) -->
+        <div class="row g-4 mb-5 animate__animated animate__fadeInUp">
+            <div class="col-lg-8">
+                <div class="card h-100 p-4 border-0 shadow-lg" style="background-color: #1e1e1e; border-radius: 24px;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold m-0 text-white"><i class="bi bi-graph-up-arrow text-gold me-2"></i>Revenue
+                            Analytics</h5>
+                        <div class="badge bg-dark border border-secondary text-white-50 px-3 py-2">Last 7 Days</div>
+                    </div>
+                    <canvas id="revenueChart" style="max-height: 280px;"></canvas>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card h-100 border-0 bg-gold text-dark shadow-lg overflow-hidden"
+                    style="border-radius: 24px;">
+                    <div class="card-body d-flex flex-column justify-content-center text-center p-4">
+                        <h6 class="text-uppercase fw-bold mb-2 opacity-75 small">Total Revenue Today</h6>
+                        <h1 class="display-3 fw-bold mb-3" th:text="${totalEarnings + ' DH'}">0.00 DH</h1>
+                        <div class="mt-2 py-2 px-4 bg-dark text-gold rounded-pill d-inline-block mx-auto fw-bold">
+                            <i class="bi bi-wallet2 me-2"></i>GOAL: 2,500 DH
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schedule & Popular Services -->
+        <div class="row g-4 mb-4 animate__animated animate__fadeInUp" style="animation-delay: 0.1s;">
+            <div class="col-lg-7">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h4 class="fw-bold m-0"><i class="bi bi-calendar3 text-gold me-2"></i>Today's Agenda</h4>
+                    <span class="badge bg-dark border border-secondary rounded-pill px-3"
+                        th:text="${appointments.size() + ' Bookings'}">0 Bookings</span>
+                </div>
+
+                <div th:if="${appointments.isEmpty()}" class="text-center py-5 opacity-25">
+                    <i class="bi bi-calendar-x display-1 d-block mb-3"></i>
+                    <p class="fs-5">Quiet day? Use the FAB to add bookings.</p>
+                </div>
+
+                <div class="row g-3">
+                    <div th:each="appt : ${appointments}" class="col-12">
+                        <div class="card border-0 shadow-sm hover-lift"
+                            style="background-color: #1e1e1e; border-radius: 16px;">
+                            <div class="card-body p-4">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex align-items-center">
+                                        <div class="bg-gold text-dark rounded-circle d-flex align-items-center justify-content-center fw-bold me-3"
+                                            style="width: 48px; height: 48px;"
+                                            th:text="${#strings.substring(appt.client.name,0,1)}">C</div>
+                                        <div>
+                                            <h6 class="mb-1 fw-bold text-white fs-5" th:text="${appt.client.name}">
+                                                Customer</h6>
+                                            <div class="text-white-50 small"><i class="bi bi-clock me-1"></i> <span
+                                                    th:text="${#temporals.format(appt.appointmentDateTime, 'HH:mm')}">14:00</span>
+                                                • <span th:text="${appt.service.name}">Service</span></div>
+                                        </div>
+                                    </div>
+                                    <div class="text-end">
+                                        <div class="fw-bold text-gold fs-4" th:text="${appt.price + ' DH'}">50 DH</div>
+                                        <div class="d-flex gap-2 align-items-center justify-content-end">
+                                            <span
+                                                th:classappend="${appt.status.name() == 'COMPLETED' ? 'text-success' : appt.status.name() == 'CANCELLED' ? 'text-danger' : 'text-primary'}"
+                                                class="small fw-bold" th:text="${appt.status}">STATUS</span>
+
+                                            <div th:if="${appt.status.name() == 'SCHEDULED'}" class="dropdown">
+                                                <button class="btn btn-link text-white-50 p-0" type="button"
+                                                    data-bs-toggle="dropdown">
+                                                    <i class="bi bi-three-dots-vertical"></i>
+                                                </button>
+                                                <ul class="dropdown-menu dropdown-menu-dark shadow">
+                                                    <li>
+                                                        <form th:action="@{'/complete/' + ${appt.id}}" method="post">
+                                                            <button type="submit" class="dropdown-item text-success"><i
+                                                                    class="bi bi-check-circle me-2"></i>Mark
+                                                                Complete</button>
+                                                        </form>
+                                                    </li>
+                                                    <li>
+                                                        <form th:action="@{'/cancel/' + ${appt.id}}" method="post">
+                                                            <button type="submit" class="dropdown-item text-danger"><i
+                                                                    class="bi bi-x-circle me-2"></i>Cancel</button>
+                                                        </form>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="card border-0 p-4 h-100 shadow-sm" style="background-color: #1e1e1e; border-radius: 24px;">
+                    <h5 class="fw-bold mb-4 text-white"><i class="bi bi-fire text-gold me-2"></i>Performance</h5>
+                    <div th:each="svc, iter : ${services}" class="mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="small fw-bold text-white-50" th:text="${svc.name}">Haircut</span>
+                            <span class="small text-gold" th:text="${svc.price + ' DH'}">50 DH</span>
+                        </div>
+                        <div class="progress" style="height: 6px; background-color: #121212;">
+                            <div class="progress-bar bg-gold" role="progressbar"
+                                th:style="'width: ' + ${100 - (iter.index * 20)} + '%'"></div>
+                        </div>
+                    </div>
+                    <div class="mt-auto">
+                        <div class="alert alert-dark border-secondary text-white-50 small mb-0 p-3"
+                            style="border-radius: 12px; background-color: #121212;">
+                            <i class="bi bi-lightbulb-fill text-gold me-2"></i><strong>Tip:</strong> Your VIP Treatment
+                            has the highest profit margin this week.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Floating Action Button -->
+        <button type="button" class="btn btn-primary fab shadow-lg" data-bs-toggle="modal" data-bs-target="#bookModal">
+            <i class="bi bi-plus-lg fs-2"></i>
+        </button>
+
+        <!-- Booking Modal -->
+        <div class="modal fade" id="bookModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content bg-dark text-light border-0 shadow-lg" style="border-radius: 20px;">
+                    <div class="modal-header border-secondary border-opacity-25">
+                        <h5 class="modal-title fw-bold text-gold">Quick Book</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form th:action="@{/book}" th:object="${newAppointment}" method="post">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label small text-white-50 fw-bold">Customer Name</label>
+                                <input type="text" name="clientName"
+                                    class="form-control bg-accent border-secondary bg-dark text-white p-3"
+                                    style="border-radius: 10px;" placeholder="e.g. Reda El Amrani" required>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small text-white-50 fw-bold">Phone Number</label>
+                                    <input type="tel" name="clientPhone"
+                                        class="form-control bg-accent border-secondary bg-dark text-white p-3"
+                                        style="border-radius: 10px;" placeholder="06XXXXXXXX" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label small text-white-50 fw-bold">Email Address
+                                        (Optional)</label>
+                                    <input type="email" name="clientEmail"
+                                        class="form-control bg-accent border-secondary bg-dark text-white p-3"
+                                        style="border-radius: 10px;" placeholder="client@example.com">
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 mb-3">
+                                    <label class="form-label small text-white-50 fw-bold">Service</label>
+                                    <select id="serviceSelect" name="serviceId"
+                                        class="form-select bg-accent border-secondary bg-dark text-white p-3"
+                                        style="border-radius: 10px;" required>
+                                        <option value="" disabled selected>Select Service</option>
+                                        <option th:each="svc : ${services}" th:value="${svc.id}"
+                                            th:data-price="${svc.price}" th:text="${svc.name}">Service Name</option>
+                                    </select>
+                                </div>
+                                <div class="col-6 mb-3">
+                                    <label class="form-label small text-white-50 fw-bold">Price (DH)</label>
+                                    <input type="number" id="servicePrice" step="0.01" th:field="*{price}"
+                                        class="form-control bg-accent border-secondary bg-dark text-white p-3"
+                                        style="border-radius: 10px;" placeholder="50.00" required readonly>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small text-white-50 fw-bold">Time</label>
+                                <input type="datetime-local" th:field="*{appointmentDateTime}"
+                                    class="form-control bg-accent border-secondary bg-dark text-white p-3"
+                                    style="border-radius: 10px;" required>
+                            </div>
+                            <div class="mb-0">
+                                <label class="form-label small text-white-50 fw-bold">Assign Barber</label>
+                                <select th:field="*{user.id}"
+                                    class="form-select bg-accent border-secondary bg-dark text-white p-3"
+                                    style="border-radius: 10px;">
+                                    <option th:each="barber : ${barbers}" th:value="${barber.id}"
+                                        th:text="${barber.fullName}">Barber Name</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0 p-4 pt-0">
+                            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold fs-5 shadow"
+                                style="border-radius: 12px;">CONFIRM APPOINTMENT</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Section (Fresha Style) -->
+        <div class="row g-4 mb-4 animate__animated animate__fadeInUp">
+            <div class="col-md-8">
+                <div class="card h-100 p-4 border-0 shadow-sm" style="background-color: #1e1e1e;">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h5 class="fw-bold m-0"><i class="bi bi-graph-up text-gold me-2"></i>Weekly Revenue</h5>
+                        <select class="form-select form-select-sm bg-dark border-secondary text-white w-auto">
+                            <option>Last 7 Days</option>
+                        </select>
+                    </div>
+                    <canvas id="revenueChart" style="max-height: 250px;"></canvas>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 p-4 border-0 shadow-sm" style="background-color: #1e1e1e;">
+                    <h5 class="fw-bold mb-4"><i class="bi bi-star-fill text-gold me-2"></i>Top Services</h5>
+                    <div th:each="svc : ${services}" class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-white-50" th:text="${svc.name}">Service</span>
+                        <span class="badge bg-gold text-dark" th:text="${svc.price + ' DH'}">50 DH</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // Price Mapping Logic
+                const serviceSelect = document.getElementById('serviceSelect');
+                const servicePriceInput = document.getElementById('servicePrice');
+
+                serviceSelect.addEventListener('change', function () {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const price = selectedOption.getAttribute('data-price');
+                    servicePriceInput.value = price;
+                });
+
+                // Chart.js Revenue Initialization
+                const ctx = document.getElementById('revenueChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Revenue (DH)',
+                            data: [450, 620, 580, 890, 1100, 1350, 980],
+                            borderColor: '#D4AF37',
+                            backgroundColor: 'rgba(212, 175, 55, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            borderWidth: 3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#fff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#888' } },
+                            x: { grid: { display: false }, ticks: { color: '#888' } }
+                        }
+                    }
+                });
+            });
+        </script>
+    </section>
+</body>
+
+</html>

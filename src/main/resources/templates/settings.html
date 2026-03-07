@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: html(content=~{::section})}">
+
+<body>
+    <section>
+        <div class="row mb-4 animate__animated animate__fadeInDown">
+            <div class="col">
+                <h2 class="fw-bold mb-0"><i class="bi bi-gear-fill text-gold me-2"></i> Settings</h2>
+                <p class="text-white-50">Manage your profile and system preferences.</p>
+            </div>
+        </div>
+
+        <!-- Success/Error Alerts -->
+        <div th:if="${successMessage}"
+            class="alert alert-success border-0 bg-success text-white shadow-sm mb-4 animate__animated animate__fadeIn">
+            <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${successMessage}">Success</span>
+        </div>
+        <div th:if="${errorMessage}"
+            class="alert alert-danger border-0 bg-danger text-white shadow-sm mb-4 animate__animated animate__shakeX">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${errorMessage}">Error</span>
+        </div>
+
+        <div class="row g-4">
+            <!-- Profile Section -->
+            <div class="col-12 col-lg-8 animate__animated animate__fadeInLeft">
+                <div class="card p-4">
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="rounded-circle bg-gold text-dark d-flex align-items-center justify-content-center fw-bold me-3"
+                            style="width: 60px; height: 60px; font-size: 1.5rem;"
+                            th:text="${#strings.substring(user.fullName,0,1)}">A</div>
+                        <div>
+                            <h4 class="mb-0 fw-bold" th:text="${user.fullName}">Ahmed El Mansouri</h4>
+                            <span class="badge bg-gold text-dark" th:text="${user.role}">ADMIN</span>
+                        </div>
+                    </div>
+
+                    <form th:action="@{/settings/update-profile}" method="post">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-white-50 small fw-bold">USERNAME</label>
+                                <input type="text" class="form-control bg-dark border-secondary text-white-50"
+                                    th:value="${user.username}" readonly>
+                                <small class="text-muted">Username cannot be changed.</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-white-50 small fw-bold">FULL NAME</label>
+                                <input type="text" name="fullName"
+                                    class="form-control bg-accent border-secondary text-white"
+                                    th:value="${user.fullName}" required>
+                            </div>
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn btn-primary px-4 py-2">
+                                    <i class="bi bi-check2-circle me-2"></i> Save Changes
+                                </button>
+                                <button type="button" class="btn btn-outline-light ms-2 px-4 py-2"
+                                    data-bs-toggle="modal" data-bs-target="#passwordModal">
+                                    <i class="bi bi-shield-lock me-2"></i> Change Password
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="col-12 col-lg-4 animate__animated animate__fadeInRight">
+                <div class="card p-4 h-100">
+                    <h5 class="fw-bold mb-4"><i class="bi bi-info-circle text-gold me-2"></i> System Info</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-3 d-flex justify-content-between">
+                            <span class="text-white-50">Version</span>
+                            <span class="fw-bold text-light">1.0.0-MVP</span>
+                        </li>
+                        <li class="mb-3 d-flex justify-content-between">
+                            <span class="text-white-50">Environment</span>
+                            <span class="badge bg-success">Production</span>
+                        </li>
+                        <li class="mb-3 d-flex justify-content-between">
+                            <span class="text-white-50">Database</span>
+                            <span class="text-gold">MySQL 8.0</span>
+                        </li>
+                    </ul>
+                    <div class="mt-auto">
+                        <div class="alert alert-info bg-dark border-info text-info small mb-0">
+                            <i class="bi bi-lightbulb me-2"></i> New features coming soon: Multiple chairs, SMS
+                            notifications.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Password Modal -->
+        <div class="modal fade" id="passwordModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content bg-dark text-light border-0 shadow-lg" style="border-radius: 20px;">
+                    <div class="modal-header border-secondary border-opacity-25">
+                        <h5 class="modal-title fw-bold text-gold">Security Settings</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <form th:action="@{/settings/update-password}" method="post">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label small text-white-50 fw-bold">CURRENT PASSWORD</label>
+                                <input type="password" name="currentPassword"
+                                    class="form-control bg-accent border-secondary text-white p-3"
+                                    style="border-radius: 10px;" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label small text-white-50 fw-bold">NEW PASSWORD</label>
+                                <input type="password" name="newPassword"
+                                    class="form-control bg-accent border-secondary text-white p-3"
+                                    style="border-radius: 10px;" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-0 p-4 pt-0">
+                            <button type="submit" class="btn btn-primary w-100 py-3 fw-bold shadow"
+                                style="border-radius: 12px;">UPDATE SECURITY</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .bg-accent {
+                background-color: var(--barber-accent) !important;
+            }
+
+            .bg-dark {
+                background-color: #121212 !important;
+            }
+        </style>
+    </section>
+</body>
+
+</html>

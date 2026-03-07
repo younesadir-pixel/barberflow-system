@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /logout
+Disallow: /settings
+Sitemap: https://barberflow.up.railway.app/sitemap.xml

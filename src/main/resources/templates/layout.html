@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:fragment="html(content)">
+
+<head th:fragment="head">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BarberFlow - Gestion de Salon de Coiffure Professionnel</title>
+    <meta name="description"
+        content="BarberFlow : Logiciel de gestion premium pour salons de coiffure. Planification, analytique et gestion des services style Squire & Fresha.">
+    <meta name="keywords"
+        content="barberflow, gestion salon coiffure, logiciel barbier, squire, fresha, planning coiffeur, maroc">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://barberflow.up.railway.app/">
+    <meta property="og:title" content="BarberFlow - Gestion de Salon de Coiffure Premium">
+    <meta property="og:description"
+        content="Optimisez votre salon de coiffure avec BarberFlow. Gestion des rendez-vous et analyses de revenus professionnelles.">
+    <meta property="og:image" content="https://barberflow.up.railway.app/images/og-image.jpg">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts: Outfit -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --barber-dark: #121212;
+            --barber-gold: #D4AF37;
+            --barber-light: #f8f9fa;
+            --barber-accent: #1e1e1e;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--barber-dark);
+            color: var(--barber-light);
+            padding-bottom: 70px;
+            /* footer space */
+        }
+
+        .navbar {
+            background-color: rgba(18, 18, 18, 0.95) !important;
+            border-bottom: 1px solid var(--barber-gold);
+            backdrop-filter: blur(10px);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--barber-gold) !important;
+            letter-spacing: 1px;
+        }
+
+        .card {
+            background-color: var(--barber-accent);
+            border: 1px solid #333;
+            border-radius: 15px;
+            color: white;
+            transition: transform 0.2s;
+        }
+
+        .btn-primary {
+            background-color: var(--barber-gold);
+            border-color: var(--barber-gold);
+            color: #000;
+            font-weight: 600;
+            border-radius: 10px;
+        }
+
+        .btn-primary:hover {
+            background-color: #bfa030;
+            border-color: #bfa030;
+            color: #000;
+        }
+
+        .text-gold {
+            color: var(--barber-gold);
+        }
+
+        .bg-gold {
+            background-color: var(--barber-gold);
+        }
+
+        /* Mobile-First Floating Action Button */
+        .fab {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.4);
+            z-index: 1000;
+            border: none;
+        }
+    </style>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top mb-4">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard">
+                <i class="bi bi-scissors me-2"></i>BARBERFLOW
+            </a>
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/dashboard"><i class="bi bi-speedometer2 me-1"></i>
+                            Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/clients"><i class="bi bi-people me-1"></i> Clients</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/settings"><i class="bi bi-gear me-1"></i> Settings</a>
+                    </li>
+                    <li class="nav-item ms-lg-3" sec:authorize="isAuthenticated()">
+                        <form th:action="@{/logout}" method="post" class="m-0">
+                            <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3 mt-2 mt-lg-0">
+                                <i class="bi bi-box-arrow-right me-1"></i> Logout
+                            </button>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div th:replace="${content}"></div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>
