@@ -2,6 +2,7 @@ package com.barber.system.service;
 
 import com.barber.system.model.User;
 import com.barber.system.model.BarberShop;
+import com.barber.system.repository.BarberShopRepository;
 import com.barber.system.repository.UserRepository;
 import com.barber.system.security.TenantContextService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,14 +17,17 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final BarberShopRepository barberShopRepository;
     private final TenantContextService tenantContextService;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
     public UserService(UserRepository userRepository, 
+                       BarberShopRepository barberShopRepository,
                        TenantContextService tenantContextService,
                        PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.barberShopRepository = barberShopRepository;
         this.tenantContextService = tenantContextService;
         this.passwordEncoder = passwordEncoder;
     }
@@ -46,9 +50,19 @@ public class UserService {
         }
         
         // If it's a new user and no shop assigned, assign current shop
-        if (user.getBarberShop() == null) {
-            user.setBarberShop(tenantContextService.getCurrentBarberShop());
-        }
         return userRepository.save(user);
+    }
+
+    @Transactional
+    public void registerNewSalon(BarberShop shop, User admin) {
+        // 1. Save Salon
+        BarberShop savedShop = barberShopRepository.save(shop);
+        
+        // 2. Setup Admin
+        admin.setBarberShop(savedShop);
+        admin.setRole("ADMIN");
+        admin.setPassword(passwordEncoder.encode(admin.getPassword()));
+        
+        userRepository.save(admin);
     }
 }
