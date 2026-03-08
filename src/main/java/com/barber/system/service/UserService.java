@@ -50,7 +50,10 @@ public class UserService {
         }
         
         if (user.getBarberShop() == null) {
-            user.setBarberShop(tenantContextService.getCurrentBarberShop());
+            BarberShop currentShop = tenantContextService.getCurrentBarberShop();
+            if (currentShop != null) {
+                user.setBarberShop(currentShop);
+            }
         }
         return userRepository.save(user);
     }

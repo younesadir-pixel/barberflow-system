@@ -19,15 +19,27 @@ public class TenantContextService {
     }
 
     public BarberShop getCurrentBarberShop() {
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+            return null;
+        }
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (principal == null) {
+            return null;
+        }
+        
         String username;
         if (principal instanceof UserDetails) {
             username = ((UserDetails) principal).getUsername();
         } else {
             username = principal.toString();
         }
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Utilisateur non trouvé dans le contexte de sécurité."));
-        return user.getBarberShop();
+        
+        if ("anonymousUser".equals(username)) {
+            return null;
+        }
+
+        return userRepository.findByUsername(username)
+                .map(User::getBarberShop)
+                .orElse(null);
     }
 }
