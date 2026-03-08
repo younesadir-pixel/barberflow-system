@@ -111,7 +111,6 @@ public class DataInitializer {
 
                 Appointment a2 = new Appointment();
                 a2.setBarberShop(defaultShop);
-                a1.setBarberShop(defaultShop);
                 a2.setClient(c2);
                 a2.setUser(admin);
                 a2.setAppointmentDateTime(now.withHour(10).withMinute(30));
