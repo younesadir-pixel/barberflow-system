@@ -29,8 +29,8 @@ public class RegistrationController {
     }
 
     @PostMapping("/register")
-    public String registerSalon(@ModelAttribute BarberShop salon, 
-                                @ModelAttribute User admin, 
+    public String registerSalon(@ModelAttribute("salon") BarberShop salon, 
+                                @ModelAttribute("admin") User admin, 
                                 RedirectAttributes redirectAttributes) {
         try {
             userService.registerNewSalon(salon, admin);
