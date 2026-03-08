@@ -49,7 +49,9 @@ public class UserService {
             user.setPassword(passwordEncoder.encode(user.getPassword()));
         }
         
-        // If it's a new user and no shop assigned, assign current shop
+        if (user.getBarberShop() == null) {
+            user.setBarberShop(tenantContextService.getCurrentBarberShop());
+        }
         return userRepository.save(user);
     }
 
