@@ -1,7 +1,7 @@
 package com.barber.system.controller;
 
 import com.barber.system.model.User;
-import com.barber.system.repository.UserRepository;
+import com.barber.system.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,7 +28,7 @@ public class SettingsController {
     @GetMapping("/settings")
     public String settings(@AuthenticationPrincipal UserDetails userDetails, Model model) {
         if (userDetails != null) {
-            userRepository.findByUsername(userDetails.getUsername()).ifPresent(user -> {
+            userService.getUserByUsername(userDetails.getUsername()).ifPresent(user -> {
                 model.addAttribute("user", user);
             });
         }
@@ -55,11 +55,11 @@ public class SettingsController {
                                  @RequestParam String newPassword,
                                  RedirectAttributes redirectAttributes) {
         if (userDetails != null) {
-            User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+            User user = userService.getUserByUsername(userDetails.getUsername()).orElse(null);
             if (user != null) {
                 if (passwordEncoder.matches(currentPassword, user.getPassword())) {
                     user.setPassword(passwordEncoder.encode(newPassword));
-                    userRepository.save(user);
+                    userService.saveUser(user);
                     redirectAttributes.addFlashAttribute("successMessage", "Mot de passe changé avec succès !");
                 } else {
                     redirectAttributes.addFlashAttribute("errorMessage", "Le mot de passe actuel est incorrect.");
