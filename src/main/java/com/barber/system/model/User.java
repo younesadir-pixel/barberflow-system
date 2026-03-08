@@ -24,19 +24,27 @@ public class User {
     @Column(nullable = false)
     private String role;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "barber_shop_id")
+    private BarberShop barberShop;
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Appointment> appointments = new ArrayList<>();
 
     public User() {}
 
-    public User(Long id, String username, String password, String fullName, String role, List<Appointment> appointments) {
+    public User(Long id, String username, String password, String fullName, String role, List<Appointment> appointments, BarberShop barberShop) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.fullName = fullName;
         this.role = role;
         this.appointments = appointments;
+        this.barberShop = barberShop;
     }
+
+    public BarberShop getBarberShop() { return barberShop; }
+    public void setBarberShop(BarberShop barberShop) { this.barberShop = barberShop; }
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

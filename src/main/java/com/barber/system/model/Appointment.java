@@ -14,6 +14,10 @@ public class Appointment {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "barber_shop_id", nullable = false)
+    private BarberShop barberShop;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "client_id", nullable = false)
     private Client client;
 
@@ -52,6 +56,9 @@ public class Appointment {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public BarberShop getBarberShop() { return barberShop; }
+    public void setBarberShop(BarberShop barberShop) { this.barberShop = barberShop; }
 
     public Client getClient() { return client; }
     public void setClient(Client client) { this.client = client; }

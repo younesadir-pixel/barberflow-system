@@ -1,7 +1,9 @@
 package com.barber.system.service;
 
 import com.barber.system.model.Client;
+import com.barber.system.model.BarberShop;
 import com.barber.system.repository.ClientRepository;
+import com.barber.system.security.TenantContextService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,20 +15,22 @@ import java.util.Optional;
 public class ClientService {
 
     private final ClientRepository clientRepository;
+    private final TenantContextService tenantContextService;
 
     @Autowired
-    public ClientService(ClientRepository clientRepository) {
+    public ClientService(ClientRepository clientRepository, TenantContextService tenantContextService) {
         this.clientRepository = clientRepository;
+        this.tenantContextService = tenantContextService;
     }
 
     @Transactional(readOnly = true)
     public List<Client> getAllClients() {
-        return clientRepository.findAll();
+        return clientRepository.findByBarberShop(tenantContextService.getCurrentBarberShop());
     }
 
     @Transactional(readOnly = true)
     public Optional<Client> getClientByPhone(String phone) {
-        return clientRepository.findByPhone(phone);
+        return clientRepository.findByBarberShopAndPhone(tenantContextService.getCurrentBarberShop(), phone);
     }
 
     @Transactional(readOnly = true)
@@ -38,6 +42,7 @@ public class ClientService {
 
     @Transactional
     public Client saveClient(Client client) {
+        client.setBarberShop(tenantContextService.getCurrentBarberShop());
         return clientRepository.save(client);
     }
 }

@@ -81,6 +81,6 @@ public class AppointmentController {
     @PostMapping("/cancel/{id}")
     public String cancelAppointment(@PathVariable Long id) {
         appointmentService.updateStatus(id, AppointmentStatus.CANCELLED);
-        return "redirect:/redirect:/dashboard";
+        return "redirect:/dashboard";
     }
 }

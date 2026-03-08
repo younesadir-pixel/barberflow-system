@@ -13,6 +13,10 @@ public class Client {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "barber_shop_id")
+    private BarberShop barberShop;
+
     @Column(nullable = false)
     private String name;
 
@@ -40,6 +44,9 @@ public class Client {
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
+
+    public BarberShop getBarberShop() { return barberShop; }
+    public void setBarberShop(BarberShop barberShop) { this.barberShop = barberShop; }
 
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }

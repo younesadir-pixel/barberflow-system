@@ -16,12 +16,12 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 public class SettingsController {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public SettingsController(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+    public SettingsController(UserService userService, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -40,9 +40,9 @@ public class SettingsController {
                                 @RequestParam String fullName,
                                 RedirectAttributes redirectAttributes) {
         if (userDetails != null) {
-            userRepository.findByUsername(userDetails.getUsername()).ifPresent(user -> {
+            userService.getUserByUsername(userDetails.getUsername()).ifPresent(user -> {
                 user.setFullName(fullName);
-                userRepository.save(user);
+                userService.saveUser(user);
                 redirectAttributes.addFlashAttribute("successMessage", "Profil mis à jour avec succès !");
             });
         }
